@@ -1,0 +1,92 @@
+@startuml
+
+class Coin {
+    -int value
+    +Coin(int value)
+    +int getValue()
+}
+
+class Note {
+    -int value
+    +Note(int value)
+    +int getValue()
+}
+
+class Product {
+    -String name
+    -int price
+    +Product(String name, int price)
+    +String getName()
+    +int getPrice()
+}
+
+class Inventory {
+    -Map<Product, Integer> productStock
+    +Inventory()
+    +void addProduct(Product, int)
+    +void removeProduct(Product, int)
+    +int getStock(Product)
+    +Set<Product> getProducts()
+}
+
+abstract class State {
+    +void handleRequest(VendingMachine vm)
+}
+
+class IdleState {
+    +void handleRequest(VendingMachine vm)
+}
+
+class ReadyState {
+    +void handleRequest(VendingMachine vm)
+}
+
+class DispenseState {
+    +void handleRequest(VendingMachine vm)
+}
+
+class ReturnChangeState {
+    +void handleRequest(VendingMachine vm)
+}
+
+class VendingMachine {
+    -Inventory inventory
+    -State state
+    -List<Coin> insertedCoins
+    -List<Note> insertedNotes
+    -Product selectedProduct
+    +VendingMachine()
+    +void insertCoin(Coin)
+    +void insertNote(Note)
+    +void selectProduct(Product)
+    +void setState(State)
+    +void dispenseProduct()
+    +void returnChange()
+    +State getState()
+    +Inventory getInventory()
+}
+
+class VendingMachineDemo {
+    +main(String[] args)
+}
+
+' Inheritance (State pattern)
+State <|-- IdleState
+State <|-- ReadyState
+State <|-- DispenseState
+State <|-- ReturnChangeState
+
+' VendingMachine relationships
+VendingMachine "1" o-- "1" Inventory : has
+VendingMachine "1" *-- "1" State : current
+VendingMachine "1" o-- "*" Coin : inserted
+VendingMachine "1" o-- "*" Note : inserted
+VendingMachine "1" o-- "0..1" Product : selected
+
+' Inventory relationships
+Inventory "1" o-- "*" Product : contains
+
+' Demo uses VendingMachine
+VendingMachineDemo ..> VendingMachine : uses
+
+@enduml
