@@ -1,0 +1,16 @@
+Create class diagram using classes ->
+
+Coin.java
+DispenseState.java
+IdleState.java
+Inventory.java
+Note.java
+Product.java
+ReadyState.java
+ReturnChangeState.java
+State.java
+VendingMachine.java
+VendingMachineDemo.java
+Give me all the arrows and cardinalities belonging to the class diagram as well. Give me a plantuml code so that I can copy there and generate the class diagram with ease.
+
+Give me all the vairbales and methods in all the above classes as well. Now generate a plantuml code.
