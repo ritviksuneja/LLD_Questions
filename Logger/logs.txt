@@ -1,0 +1,2 @@
+[2025-05-29 18:04:36.551] [main] [WARN] - Now logging to both console and file.
+[2025-05-29 18:04:36.554] [main] [ERROR] - Now logging only to file.
