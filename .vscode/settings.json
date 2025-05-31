@@ -1,5 +1,7 @@
 {
     "java.project.sourcePaths": [
-        "ParkingLot/src"
-    ]
+        "ParkingLot/src",
+        "LRUCache\\src"
+    ],
+    "java.project.referencedLibraries": []
 }
