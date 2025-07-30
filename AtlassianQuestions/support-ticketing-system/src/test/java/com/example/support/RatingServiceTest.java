@@ -31,16 +31,20 @@ public class RatingServiceTest {
 
     @Test
     public void testAddInvalidRatingThrowsException() {
-        assertThrows(InvalidRatingException.class, () -> {
+        InvalidRatingException ex = assertThrows(InvalidRatingException.class, () -> {
             ratingService.addRating("1", 6);
         });
+
+        assertEquals("Rating must be between 1 and 5", ex.getMessage());
     }
 
     @Test
-    public void testAgentNotFoundThrowsException() {
-        assertThrows(AgentNotFoundException.class, () -> {
+    public void testAddRatingThrowsAgentNotFoundException() {
+        AgentNotFoundException ex = assertThrows(AgentNotFoundException.class, () -> {
             ratingService.addRating("999", 4);
         });
+
+        assertEquals("Agent with ID 999 not found", ex.getMessage());
     }
 
     @Test
