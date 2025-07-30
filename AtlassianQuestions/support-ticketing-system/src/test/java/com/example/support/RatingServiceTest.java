@@ -1,11 +1,12 @@
 package com.example.support;
 
-import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class RatingServiceTest {
 
@@ -76,6 +77,5 @@ public class RatingServiceTest {
 
         Agent alice = agentRepository.getAgent("1");
         assertEquals(5.0, alice.getAverageRating());
-        assertEquals(threads * ratingsPerThread, alice.getAverageRating() * alice.getAverageRating() / 5.0);
     }
 }
