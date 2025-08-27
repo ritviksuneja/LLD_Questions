@@ -1,0 +1,24 @@
+Question 3)	Commodity Prices
+Imagine you are given a stream of data points consisting of <timestamp, commodityPrice> you are supposed to return the maxCommodityPrice at any point in time. 
+The timestamps in the stream can be out of order, or there can be duplicate timestamps, we need to update the commodityPrice at that particular timestamp if an 
+entry for the timestamp already exists
+Create an in-memory solution tailored to prioritize frequent reads and writes for the given problem statement
+
+Can we reduce the time complexity of the getMaxCommodityPrice to O(1) if the language does not support it? This can be done using a variable to keep the maxPrice value, 
+but we need to update it when performing the upsert operations.
+
+DataPoint:
+    -timestamp: int
+    -commodityPrice: Double
+
+CommodityPrices
+    -updatedPrice: Map<int, Double> //<timeStamp, commodityPrice>
+    -maxHeap: PriorityQueue<{Double, int}> //{commodityPrice, timeStamp}
+    +addCommodityPrice(List<DataPoint>) : void
+    +getmaxCommodityPrice(): double;
+
+//if we maintain a max heap, which will be having {commodityPrice, timeStamp} as data stored in it. we can easily get the max commodityPrice.
+but the catch is that when there's conflict on timeStamp, we must resolve it. Now, we can keep a Map<timeStamp, commodityPrice> for keeping updated price of any given
+timeStamp. Whenever we are trying to fetch the max commodity price at any given time, we can absolutely check it once with the value in the map. if it matches, good.
+if it doesn't match, the max heap's top is stale, we must remove it. and keep on checking until the max heap is empty. as soon as we find it, we return it.
+simple.

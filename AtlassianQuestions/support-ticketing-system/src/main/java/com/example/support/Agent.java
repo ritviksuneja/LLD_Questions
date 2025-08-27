@@ -39,4 +39,8 @@ public class Agent {
     public String getId() {
         return id;
     }
+
+    public int getTotalRatingsCount(){
+        return ratings.stream().reduce(0, Integer::sum);
+    }
 }

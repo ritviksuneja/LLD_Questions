@@ -1,0 +1,32 @@
+Design and implement a program that accepts lap times for Formula 1 race drivers.
+Return the "Last Lap Hero" - the driver who had the biggest improvement on their last lap compared to their average lap time. 
+
+
+Entities:
+Driver
+LastLapHero
+Lap
+
+Exceptions:
+DriverNotFoundException
+IllegalArgumentException
+
+Classes:
+
+Lap:
+    -timeMillis: long //denotes the lap time in milliseconds
+
+Driver:
+    -name: String
+    -id: String
+    -laps: List<Lap>
+    +addLap(Lap lap): void
+    +getAverageLapTime(): double
+
+LastLapHero:
+    -drivers: Map<String, Driver> //for easy fetching
+    -lastLapHero: Driver
+    +addDriver(Driver driver): void
+    +addLap(String driverId, Lap lap): void
+    +getLastLapHero(): Driver
+    

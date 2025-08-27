@@ -1,0 +1,129 @@
+Employee has some department
+
+Department:
+List of employees
+List of departments
+
+Node:
+name
+List<String> employee
+List<Node> children
+
+fun getCommonGroupForEmployees (
+        currentGroup: GroupNode,
+        targetEmployees: Set<String>,
+    ) : GroupNode?
+
+Closest common group
+
+unique department
+
+
+Node:
+    -id: String
+    -children: List<Node>
+    -employees: List<Employee>
+    +addChild(Node child):void
+    
+Organization:
+    +getCommonGroupForEmployees(Node currentGroup, Set<String> targetEmployees): Node
+
+=================================================================================================================
+
+
+package com.example;
+
+import java.util.Set;
+
+public class Organization {
+    private Node root;
+    private Node lcaNode;
+
+    public Organization(Node root){
+        this.root = root;
+        lcaNode = null;
+    }
+
+    public Node getCommonGroupForEmployees(Node rootGroup, Set<String> targetEmployees){
+        lcaNode = null;
+        findLCA(rootGroup, targetEmployees);
+        return lcaNode;
+    }
+
+    int findLCA(Node root, Set<String> targetEmployees){
+        int currMatches = 0;
+        for(String child : root.getEmployees()){
+            if(targetEmployees.contains(child)){
+                currMatches++;
+            }
+        }
+        
+        if(currMatches == targetEmployees.size()){
+            if(lcaNode==null)
+                lcaNode = root;
+        }
+
+        for(Node childNode : root.getChildren()){
+            currMatches += findLCA(childNode, targetEmployees);
+        }
+
+        return currMatches;
+    }
+}
+
+
+==========================================
+
+package com.example;
+
+import java.util.List;
+
+public class Node {
+    private final String id;
+    private final List<Node> children;
+    private final List<String> employees;
+
+    
+    public Node(String id, List<Node> children, List<String> employees){
+        this.id = id;
+        this.children = children;
+        this.employees = employees;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public List<Node> getChildren() {
+        return children;
+    }
+
+    public List<String> getEmployees() {
+        return employees;
+    }
+}
+
+=====================================================
+
+package com.example;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
+public class Main {
+    public static void main(String[] args) {
+        System.out.println("Hello world!");
+
+        Node be = new Node("BE", Collections.emptyList(), List.of("A", "B"));
+        Node fe = new Node("FE", Collections.emptyList(), List.of("C", "D"));
+        Node hr = new Node("HR", Collections.emptyList(), List.of("E", "F"));
+        Node eng = new Node("HR", List.of(be, fe), List.of("X", "Y"));
+        Node company = new Node("Company", List.of(eng, hr), List.of("Z"));
+
+        Organization org = new Organization(company);
+
+        Node lca = org.getCommonGroupForEmployees(company, Set.of("A", "C"));
+        System.out.println(lca.getId());
+    }
+}

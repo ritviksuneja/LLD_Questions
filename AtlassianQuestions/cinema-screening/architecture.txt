@@ -1,0 +1,35 @@
+Cinema has a some rules
+There are movies
+There is a screening
+And CinemaSchedule gives us all of the required APIs to see if a new given screening actually can fit in the schedule or not
+
+Classes-
+
+CinemaRules:
+  -startTime: int
+  -endTime: int
+  +getters()
+  +isWithinOperatingHours(int startTime, int endTime): boolean
+
+Movie:
+  -title: String
+  -id: String
+  -duration: int
+  +getters()
+
+Screening:
+  -movie: Movie
+  -startTime: int
+  +getEndTime()
+  +getters()
+
+CinemaSchedule:
+  -rules: CinemaRules
+  -screenings: List<Screening> (sorted on startTime)
+  +getters()
+  +canNewScreeningFit(Screening newScreening): boolean
+  +addScreening(Screening)
+  +printSchedule():void
+
+InvalidScreeningException
+  

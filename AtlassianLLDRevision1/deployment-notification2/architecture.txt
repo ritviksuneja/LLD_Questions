@@ -1,0 +1,63 @@
+You are working on a deployment notification service for keeping developers informed about when their changes have been deployed.
+The service should provide two interfaces, one to receive an event and another to send out a batch of notifications for any received events.
+An event contains a version number, a list of authors, and a status indicating if the deployment has started, completed, or failed.
+Deployment notifications should include the author and the version in which their changes were deployed.
+The goal is to notify code change authors on the first time their changes are deployed successfully for each unique set of code changes   
+
+
+4:36 PM
+
+Developer
+ReceiveEvent - interface
+sendBatchNotifications- interface
+EventStatus:
+    STARTED, COMPLETED, FAILED
+Event:
+    -version: String
+    -authors: List<Developer>
+    -status: EventStatus
+    
+Notification:
+    -author: Developer
+    -version: String
+NotifyDeveloper interface
+ConsoleNotifier
+
+Classes:
+
+Developer:
+    id: String
+    name: String
+
+Enum EventStatus:
+    STARTED, COMPLETED, FAILED
+
+Event:
+    -version: String
+    -authors: List<Developer>
+    -status: EventStatus
+
+Notification:
+    -author: Developer
+    -version: String
+
+<<Interface>> ReveiceEvent:
+    receiveEvent(event:Event)
+
+<<Interface>> SendBatchNotificaitons:
+    sendBatchNotifications(List<Notification> batch): void
+
+ConsoleNotifier implements SendBatchNotificaitons:
+    sendBatchNotifications(List<Notification> batch): void
+
+
+
+DeploymentNotifier implements ReceiveEvent:
+    -batchNotifier: SendBatchNotifications
+    -batch: List<Notification>
+    -developer: Map<String, Developer> //developerId
+    -developerInBatchMap: Map<String, Set<String>> //version, Set<developerId>
+    +addDeveloper()
+    +receiveEvent(Event event): void
+    +sendBatchNotifications(): void
+

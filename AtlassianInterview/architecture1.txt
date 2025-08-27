@@ -1,0 +1,217 @@
+Imagine we have a customer support ticketing system. The system allows customers to rate the support agent out of 5. 
+To start with, write a function which accepts a rating, and another which will get all of the agents and the average rating each one has received, ordered highest to lowest.
+
+ratings are integers
+1 -> 5
+more than once rating is fine
+
+
+Agent
+TicketingSystem
+
+Agent:
+    -id: String
+    -name: String
+    -ratings: List<int>
+    +addRating(int rating): void
+    +getAverageRating(): double
+
+RatingSystem:
+    -agents: Map<String, Agent> //agentId
+    +addAgent(Agent agent): void
+    +addRating(String agentId, int rating): void
+    +getAgentsByAverageRating(): List<Agent>
+
+tests:
+1. test happy scenario.
+2. test exception when agent is not found
+3. test exception when there's a duplicate agent already in the RatingSystem
+4. test when ratings are out of bounds.
+
+=================================================================================
+
+package com.example;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Agent {
+    //avg rating = 0.0
+    //total ratings = 0
+    //(avgRating * totalRatings + inputrating) / (totalRatings + 1)
+
+    private final String id;
+    private final String name;
+    private final List<Integer> ratings;
+    private double averageRating;
+
+    public Agent(String id, String name) {
+        this.id = id;
+        this.name = name;
+        this.ratings = new ArrayList<>();
+        averageRating = 0.0;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void addRating(int rating){
+        ratings.add(rating);
+    }
+
+    public void computeAverageRating(){
+        if(ratings.isEmpty()){
+            averageRating = 0.0;
+        }
+
+        averageRating = ratings.stream().mapToInt(Integer::intValue).average().orElse(0.0);
+    }
+
+    public double getAverageRating(){
+        return averageRating;
+    }
+
+    public int getratingsCount(){
+        return ratings.size();
+    }
+}
+
+=================================================================================
+
+package com.example;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+public class RatingSystem {
+    private final Map<String, Agent> agents;
+
+    public RatingSystem(){
+        agents = new HashMap<>();
+    }
+
+    public void addAgent(Agent agent){
+        if(agents.containsKey(agent.getId())){
+            throw new RuntimeException("Agent with id '" + agent.getId() + "' already exists.");
+        }
+
+        agents.put(agent.getId(), agent);
+    }
+
+    public void addRating(String agentId, int rating){
+        if(rating < 1 || rating > 5){
+            throw new IllegalArgumentException("Rating provided is out of the acceptable range [1..5].");
+        }
+        if(!agents.containsKey(agentId)){
+            throw new RuntimeException("Agent with id '" + agentId + "' does not exist.");
+        }
+
+        Agent agent = agents.get(agentId);
+        agent.addRating(rating);
+        agent.computeAverageRating();
+    }
+
+    public List<Agent> getAgentsByAverageRating(){
+        //List<Agent> agentsList = agents.values().stream().collect(Collectors.toList());
+        if(agents.isEmpty()){
+            return Collections.emptyList();
+        }
+
+        return agents.values().stream().sorted((a1, a2) -> {
+            int cmp = Double.compare(a2.getAverageRating(), a1.getAverageRating());
+            if(cmp == 0){
+                return Integer.compare(a2.getratingsCount(), a1.getratingsCount());
+            }
+            return cmp;
+        }).collect(Collectors.toList());
+    }
+}
+
+
+=================================================================================
+
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import com.example.Agent;
+import com.example.RatingSystem;
+
+
+// tests:
+// 1. test happy scenario.
+// 2. test exception when agent is not found
+// 3. test exception when there's a duplicate agent already in the RatingSystem
+// 4. test when ratings are out of bounds.
+// 5. test when there are no agents in the system.
+
+public class RatingSystemTests {
+    private RatingSystem ratingSystem;
+
+    @BeforeEach
+    public void setup(){
+        ratingSystem = new RatingSystem();
+        Agent aman = new Agent("1", "Aman");
+        Agent biswa = new Agent("2", "Biswa");
+        Agent charan = new Agent("3", "Charan");
+        ratingSystem.addAgent(aman);
+        ratingSystem.addAgent(biswa);
+        ratingSystem.addAgent(charan);
+    }
+
+    @Test
+    public void testCorrectOrderingOfAgents(){
+        ratingSystem.addRating("1", 2);
+        ratingSystem.addRating("1", 2);
+        ratingSystem.addRating("1", 2);
+        ratingSystem.addRating("2", 3);
+        ratingSystem.addRating("2", 3);
+        ratingSystem.addRating("2", 3);
+        ratingSystem.addRating("3", 4);
+        ratingSystem.addRating("3", 4);
+        ratingSystem.addRating("3", 4);
+
+        List<Agent> agents = ratingSystem.getAgentsByAverageRating();
+
+        assertEquals("3", agents.get(0).getId());
+    }
+
+    @Test
+    public void testCorrectOrderingWhenNoAgents(){
+        RatingSystem newRatingSystem = new RatingSystem();
+        List<Agent> agents = newRatingSystem.getAgentsByAverageRating();
+
+        assertEquals(0, agents.size());
+    }
+
+    @Test
+    public void testExceptionWhenAgentIsNotFound(){
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> ratingSystem.addRating("4", 1));
+        assertEquals("Agent with id '4' does not exist.", ex.getMessage());
+    }
+
+    @Test
+    public void testExceptionWhenRatingIsIllegal(){
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> ratingSystem.addRating("2", 6));
+        assertEquals("Rating provided is out of the acceptable range [1..5].", ex.getMessage());
+    }
+
+    @Test
+    public void testExceptionWhenAgentAlreadyExists(){
+        Agent charu = new Agent("2", "Charu");
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> ratingSystem.addAgent(charu));
+        assertEquals("Agent with id '2' already exists.", ex.getMessage());
+    }
+}

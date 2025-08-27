@@ -1,0 +1,39 @@
+middleware router
+path should be unique. there can't be two routes for the same path.
+
+
+Interface Router {
+Fun addRoute(path: String, result: String) : Unit;
+Fun callRoute(path:String) :String;
+}
+
+so, we will keep a dictionary of paths in the router implementation.
+
+clases:
+
+RouterImpl
+  -routeMap: Map<String, String>
+  +getters()
+  +setters()
+
+Exception classes:
+
+RouteNotFoundException
+
+Tests:
+  test duplicate route
+  test route does not exist
+  test proper functionality
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+TrieNode:
+  -children: Map<String, TrieNode>
+  -result: String
+
+  +hasChild(String segment): void
+  +addChild(String segment): void
+  +addResult(String result): void
+  +getResult(): String
+  addChild(String segment): void

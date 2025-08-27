@@ -1,0 +1,41 @@
+//this is where I'll define the architecture of the System
+Driver will have laps
+LastLapHeroCalculator will have a map of drivers
+
+Lap:
+  -------------------------
+  -pitStop: boolean
+  -timeMillis: long
+  -------------------------
+  +getters
+
+
+Driver:
+  -------------------------
+  -name: String
+  -laps: List<Lap>
+  -------------------------
+  +getLastLap(): Lap
+  +getAverageTime(boolean): double
+  +addLap(Lap): void
+  +getters
+
+
+RaceTelemeteryListener <Interface>:
+  -------------------------
+  +onLastLapHeroChanged(String)
+
+
+LastLapHeroCalculator
+  -------------------------
+  -driver: map<String, Driver>
+  -lock: ReadWriteLock
+  -telemetryListeners: List<RaceTelemetryListener>
+  -lastHero: String
+  -------------------------
+  +addDriver(Driver): void
+  +recordLap(String driverName, boolean pitStop, long timeMillis): void
+  +addTelemetryListener(RaceTelemeteryListener listener):void
+  -updateLastHero(boolean pitStop): void
+  -calculateHero(boolean pitStop): String
+  -notifyHeroChange(String heroName): void

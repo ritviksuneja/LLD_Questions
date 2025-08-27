@@ -1,0 +1,5 @@
+# Created at 2025-08-15T17:57:34.740
+Boot Manifest-JAR contains absolute paths in classpath 'D:\Java_VSC\LLD_Questions\AtlassianLLDRevision1\customer-satisfaction\target\test-classes'
+Hint: <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
+'other' has different root
+

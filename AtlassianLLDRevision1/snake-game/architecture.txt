@@ -1,0 +1,72 @@
+Interface SnakeGame {
+moveSnake(snakeDirection);
+isGameOver();
+}
+
+Snake's size grows in every 5 moves
+
+Board -> done
+Snake -> done
+Position -> done
+SnakeGame -> done
+SnakeGameImpl -> done
+SnakeDirection -> done
+
+Exceptions:
+SnakeOutOfBoundsException
+SnakeCollidedException
+
+enum:
+
+SnakeDirection:
+    UP, DOWN, LEFT, RIGHT
+
+Classes:
+
+Board:
+    -width: int
+    -height: int
+    +constructor()
+    +isPointInside(int row, int column): boolean
+
+Position:
+    -x: int
+    -y: int
+    +constructor()
+    +getters()
+
+Snake:
+    -body: LinkedList<Position>
+    +constructor()
+    +getHead(): Position
+    +getTail(): Position
+    +getSize(): int
+    +checkCollisionWithSelf() // because the snake is not aware of the boundaries. It shouldn't implement collision with boundary. That should be done by SnakeImpl.
+    +moveSnake(Position newHead): void
+    +growSnake(Position newHead): void
+
+
+Collision cases:
+1. When we move the snake in any direction:
+    a. Snake's new head can hit the boundary.
+    b. Snake's new head can hit the body. First we move the snake's head. Then we move the snake's tail. Then we check if the snake's head is there in the body of the snake.
+2. When we increase the size of the snake:
+    a. Snake's new head can hit the boundary. I want to know in which direction shall I increase the snake's head in the case of size increase? 
+        Maybe the direction which is given last shall be the direction of growth as well.
+    b. In case of size increase, we first body a new head. In this case, we will not change the tail of the snake. 
+        Rather, we will simply check if the new head of the snake is in the body of the snake.
+
+Interface SnakeGame {
+moveSnake(snakeDirection);
+isGameOver();
+}
+
+SnakeGameImpl implements SnakeGame:
+    -snake: Snake
+    -board: Board
+    -gameOver: boolean
+    -moveCounter: int
+    +constructor()
+    +moveSnake(SnakeDirection dir): void
+    +checkCollisionWithBoundary(Position newHead): boolean
+    +isGameOver(): boolean

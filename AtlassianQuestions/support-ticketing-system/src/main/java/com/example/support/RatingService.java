@@ -1,5 +1,6 @@
 package com.example.support;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,9 +17,21 @@ public class RatingService {
     }
 
     public List<Agent> getAgentsByAverageRating() {
+        // return agentRepository.getAllAgents()
+        //         .stream()
+        //         .sorted((a1, a2) -> {
+        //             int cmp = Double.compare(a2.getAverageRating(), a1.getAverageRating());
+        //             if(cmp == 0){
+        //                 return Integer.compare(a2.getTotalRatingsCount(), a1.getTotalRatingsCount());
+        //             }
+        //             return cmp;
+        //         })
+        //         .collect(Collectors.toList());
+
         return agentRepository.getAllAgents()
                 .stream()
-                .sorted((a1, a2) -> Double.compare(a2.getAverageRating(), a1.getAverageRating()))
+                .sorted(Comparator.comparing(Agent::getAverageRating).reversed()
+                        .thenComparing(Agent::getTotalRatingsCount))
                 .collect(Collectors.toList());
     }
 }

@@ -1,0 +1,65 @@
+ Question 1)	Customer Satisfaction
+a)	Imagine we have a customer support ticketing system. The system allows customers to rate the support agent out of 5. 
+To start with, write a function which accepts a rating, and another which will show me all of the agents and the average ratingeach one has received, 
+ordered highest to lowest.
+
+Questions to ask:
+1. The rating can be between 1 to 5, right? I am assuming integer as ratings.
+
+Agent
+RatingSystem -> accept rating, show all agents avg rating wise
+Customer
+
+Agent:
+    -id: String
+    -name: String
+    -ratings: List<Integer>
+    +getters()
+    +constructor()
+    +getAverageRating(): Double
+    +addRating(): void
+
+RatingSystem:
+    -agents: Map<String, Agent> //<agentId, Agent>
+    +constructor()
+    +addAgent(Agent agent): void
+    +addRating(String agentId, int rating) : void
+    +getAgentsByAverageRating(): List<Agent>
+
+Exceptions:
+DuplicateAgentException
+AgentNotFoundException
+IllegalArgumentException
+
+Tests:
+1. Test happy scenario
+2. Test agent not found Exceptions
+3. Test duplicate agent found Exceptions
+4. Test adding illegal rating
+5. Test adding an agent with no id
+6. Edge case 1 - Test only one agent
+7. Edge case 2 - Test when there are no agents
+
+
+===============================================================================================
+
+Question 1)	Customer Satisfaction
+a)	Imagine we have a customer support ticketing system. The system allows customers to rate the support agent out of 5. 
+To start with, write a function which accepts a rating, and another which will show me all of the agents and the average ratingeach one has received, 
+ordered highest to lowest.
+
+TicketingSystem
+Agent
+
+Agent:
+    -id: String
+    -name: String
+    -ratings: List<int>
+    +getAverageRating(): double
+    +addRating(): void
+
+TicketingSystem:
+    -agentsMap: Map<String, Agent> //agentId
+    +addAgent(Agent agent): void
+    +addRating(String agentId, int rating): void
+    +getAgentsByAverageRating(): List<Agent>

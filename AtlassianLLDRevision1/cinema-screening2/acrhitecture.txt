@@ -1,0 +1,74 @@
+Question 6) Cinema Screenings
+Let’s pretend we are in charge of a cinema. We want to figure out whether a new movie can be added to the existing schedule without removing any of the current movies
+Note that:
+The cinema opens at 10.00
+The last possible end time for a movie is 23.00
+Movie durations include setting up the room before the movie begins and cleaning it up afterward. In other words, if for example a movie ends at 14.00, 
+the next movie can start at 14.00
+Movie start times are expressed in minutes starting from midnight, so for example,10am would be 10*60 = 600
+Scale Up 1) 
+Let’s add expected revenue per screening to each movie. 
+
+3:28
+
+Movie
+Screening
+Cinema
+
+canNewMovieBeAdded
+
+Movie:
+    -name: String
+    -duration: int
+    
+Screening:
+    -movie: Movie
+    -startTime: int
+    +getEndTime(): int
+
+Cinema:
+    -screenings: List<Screening>
+    -openingTime: int
+    -closingTime: int
+    +addScreening(Screening screening): boolean
+
+Exceptions:
+IllegalArgumentException
+
+
+ot-------st'----st--------st'------et'--------et----et'---------------------ct
+
+st', et'
+
+
+
+
+===========================================
+
+
+Question 6) Cinema Screenings
+Let’s pretend we are in charge of a cinema. We want to figure out whether a new movie can be added to the existing schedule without removing any of the current movies
+Note that:
+The cinema opens at 10.00
+The last possible end time for a movie is 23.00
+Movie durations include setting up the room before the movie begins and cleaning it up afterward. In other words, if for example a movie ends at 14.00, 
+the next movie can start at 14.00
+Movie start times are expressed in minutes starting from midnight, so for example,10am would be 10*60 = 600
+Scale Up 1) 
+Let’s add expected revenue per screening to each movie. 
+
+Movie:
+    -name: String
+    -duration: int
+
+Screening:
+    -movie: Movie
+    -startTime: int
+    +getEndTime(): int
+
+Cinema:
+    -schedule: List<Screening>
+    -openingTime: int
+    -closingTime: int
+    +addScreening(Screening screening): void
+

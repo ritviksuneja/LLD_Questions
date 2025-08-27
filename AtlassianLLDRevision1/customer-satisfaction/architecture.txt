@@ -1,0 +1,40 @@
+customer
+support ticketing System
+agent
+rating 0 -> 5
+
+functions ->
+1. accept the ratings
+2. show me all agents and avg rating sorted highest to lowest
+
+classes
+  Agent:
+    -id: String
+    -name: String
+    -ratings: List<Integer>
+    +getters()
+    +getAverageRating(): double
+    +addRating(int rating): void
+
+  CustomerTicketingSystem:
+    -agents: Map<String, Agent> //for easy fetching
+    +addAgent(Agent agent)
+    +addRating(String agentId, int rating)
+    +getAllAgentsSorted():List<Agent>
+    getters()
+
+  Exception classes:
+  AgentNotFoundException
+  IllegalRatingException
+
+  IllegalArgumentException --> For unacceptable inputs
+  Relationships:
+  Agent 1--->* Rating
+  CustomerTicketingSystem 1--->* Agent
+
+Then we will define tests.
+tests->
+1. trying to add an illegal rating.
+2. trying to rate an agent which is not in the system.
+3. testing if there's only one agent.
+4. testing properly.

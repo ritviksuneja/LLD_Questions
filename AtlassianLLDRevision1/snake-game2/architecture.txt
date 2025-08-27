@@ -1,0 +1,80 @@
+Question 3)	Game of Snakes
+
+
+         Remember the old phone game of snake? The snake can move up, down, left or right in a 2Dimensional board of arbitrary size. 
+Lets try to implement the base logic of this game
+Rules: 
+•	Every time moveSnake() is called, the snake moves up, down, left or right
+•	The snake’s initial size is 3 and grows by 1 every 5 moves
+•	The game ends when the snake hits itself
+
+We can use the following as a starting point (pseudo-code):
+Interface SnakeGame {
+moveSnake(snakeDirection);
+isGameOver();
+}
+
+
+initial position of the snake ->
+
+center of the board?
+horizontal with face on the right hand side?
+what happens on boundaries?
+0 based indexing is assumed
+is the board square?
+what happens on the fifth move? does it move as well as grow? or does it only grow?
+in the above case, do we move first and increase size or the opposite?
+
+Snake
+SnakeGame
+SnakeGameImpl
+Position
+SnakeDirection
+
+7:12 PM
+
+Enum SnakeDirection:
+    UP, DOWN, LEFT, RIGHT
+
+Board:
+    -width: int
+    -height: int
+    +constructor()
+    +getters()
+    +isPointInside(int x, int y)
+
+Position
+    -x: int
+    -y: int
+    +constuctor()
+    +getters()
+    +overriden equals method
+    +overriden hashcode
+    +move(dir: SnakeDirection): Position
+
+Snake:
+    -body: LinkedList<Position>
+    +constuctor()
+    +getHead(): Position
+    +getTail(): Position
+    +move(Position newHead): void
+    +grow(Position newHead): void
+    +checkCollisionWithSelf(): boolean
+
+<<Interface>> SnakeGame:
+    moveSnake(snakeDirection): void
+    isGameOver(): boolean
+
+SnakeGameImpl: (implements SnakeGame):
+    -snake: Snake
+    -board: Board
+    -moveCounter: int
+    -gameOver: boolean
+    +constructor()
+    +moveSnake(dir: SnakeDirection): void
+    +isGameOver(): boolean
+    +checkCollisionWithBoundary(Position newHead): boolean
+
+Exceptions:
+IllegalArgumentException is fine for now. we will think of other exceptions as we code.
+SnakeCollisionException

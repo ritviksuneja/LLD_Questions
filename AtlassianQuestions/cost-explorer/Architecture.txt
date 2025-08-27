@@ -1,0 +1,49 @@
+Plans -> BASIC, STANDARD, PREMIUM.
+Products -> JIRA, CONFLUENCE.
+Subscription -> Plan, StartDate, EndDate.
+Customer -> List<Subscription>
+
+Classes:
+
+Product:
+  -id: String
+  -name: String
+  +getters
+  constuctor
+
+Plan:
+  -id: String
+  -monthlyPrice: BigDecimal
+  -name: String
+  -product: Product
+  +getters
+  constuctor
+
+Subscription:
+  -plan: Plan
+  -startDate: LocalDate
+  -endDate: LocalDate
+  -id: String
+  -tiralDays: int(>=0)
+  +chargeForMonth(year:int, month:Month, asOfDate:LocalDate) : BigDecimal
+
+Customer:
+  -id:String
+  -name:String
+  -subscriptions: List<Subscription>
+
+CostReport:
+  -monthlyCost: Map<Month, BigDecimal>
+  -yearlyCost: BigDecimal
+
+CostExplorer:
+  -customers:List<Customer>
+  +addCustomer(Customer customer)
+  +calculateMonthlyCharges(LocalDate asOfDate, Customer customer) : BigDecimal
+  +calculateYearlyCharged(LocalDate asOfDate, Customer customer) : BigDecimal
+  +getCostReport(Customer customer, LocalDate asOfDate) : CostReport
+
+Exception:
+  -InvalidSubscriptionException
+  -CustomerNotFoundException
+  -CostComputationException

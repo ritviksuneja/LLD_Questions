@@ -1,0 +1,56 @@
+You are working on a deployment notification service for keeping developers informed about when their changes have been 
+deployed.
+The service should provide two interfaces, one to receive an event and another to send out a batch of notifications 
+for any received events.
+An event contains a version number, a list of authors, and a status indicating if the deployment has started, 
+completed, or failed.
+Deployment notifications should include the author and the version in which their changes were deployed.
+The goal is to notify code change authors on the first time their changes are deployed successfully for 
+each unique set of code changes   
+
+NotificationService implements IReceiveEvent, ISendBatchNotifications
+Developer
+DeploymentStatus enum -> STARTED, COMPLETED, FAILED.
+Event -> version, List<Developer>, Status
+
+DeploymentNotification -> List<Author>, version
+
+for each version, we want to notify developers the first time their changes were successful.
+
+Developer:
+    -id: String
+    -name: String
+    +getters()
+    constuctor()
+
+
+DeploymentStatus enum:
+    STARTED, COMPLETED, FAILED
+
+Event:
+    -version: String
+    -authors: List<Developer>
+    -status: DeploymentStatus
+    +getters()
+    +constructor()
+
+IReceiveEvent:
+    +receiveEvent(Event event): void
+
+ISendBatchNotifications:
+    +sendNotifications(): void
+
+DeploymentNotification:
+    -version: String
+    -author: Developer
+
+INotificationSender:
+    send(List<DeploymentNotification> notification): void
+
+NotificationService:
+    -notificationSender: INotificationSender
+    -batch: List<DeploymentNotification>
+    -developerVersion: Map<Version, Set<Developer>> //keeps a track of which developer is already in the batch for a given version
+    +receiveEvent(Event event): void
+    +sendNotifications(): void //this will send notifications to all the developers.
+    // we don't need to have a list of developers explicitly as a variable in this class.

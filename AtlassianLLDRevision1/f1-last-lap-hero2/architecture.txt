@@ -1,0 +1,29 @@
+Question 5)  F1 Last Lap Hero
+
+Design and implement a program that accepts lap times for Formula 1 race drivers. Return the "Last Lap Hero" - 
+the driver who had the biggest improvement on their last lap compared to their average lap time. 
+
+2:08
+
+Lap:
+    -startTime: long
+    -endTime: long
+
+Driver:
+    -id: String
+    -name: String
+    -laps: List<Lap>
+    +addLap(Lap lap)
+    +getAverageLapTime(): double
+    +getLastLapTime(): long
+
+HeroCalc:
+    -drivers: Map<String, Driver>;
+    +addDrivers(Driver driver): void
+    +addLapTime(String driverId, long startTime, long endTime)
+    +getLapLapHero(): Driver
+
+Exceptions:
+DriverNotFoundException
+IllegalArgumentException
+
