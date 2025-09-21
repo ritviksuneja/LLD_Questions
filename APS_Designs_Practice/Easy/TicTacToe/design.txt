@@ -1,0 +1,34 @@
+tic tac toe
+design a tic tac to game bewteen two players.
+the board is 3*3
+the players can mark the squares either 'X' or 'O'.
+the game ends in either of the three cases-
+1. player1 wins
+2. player2 wins
+3. draw
+
+board
+position
+player
+game
+
+board:
+    -width: int
+    -height: int
+
+position:
+    -x: int
+    -y: int
+    -value: char
+
+player:
+    -id: int
+    -name: String
+
+Game:
+    -board: Board
+    -values: List<Position>
+    +move(int x, int y, char value)
+
+the feedback is that the board should store cells rather than having a separate position class.
+thus, let's build it like that from the next time.

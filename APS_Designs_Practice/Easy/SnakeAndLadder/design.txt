@@ -1,0 +1,11 @@
+snake and ladder
+
+there are going to be 100 cells, each having a number, from 1 to 100.
+there will be snakes and ladders spread across the board.
+a cell will either have snake's head, snake's tail, ladder's starting point, ladder's ending point, or nothing.
+we should maintain a list of ladders, and snakes in the game.
+a player can roll a dice, and get a number between 1 to 6. the player must move the no they have got.
+the player who reaches 100 first wins the game.
+if the player is at 99, and he gets 1, he wins, otherwise, he doesn't.
+
+we dont need to maintain the state at the board, right? or do we?

@@ -1,0 +1,49 @@
+we want to create an elevator system design.
+let's first discuss exactly how does an elevator function.
+
+an elevator can go up and down. there can be multiple elevators in the system.
+if an elevator is going up, it will continue to go up until all the up requests exhaust. likewise for the down direction.
+a user can call an elevator from the outside, and give the command on the direction of the passenger's travel. The passenger can give both of the directions as input.
+a user can also give input to the floor no after entering into the elevator. 
+    If the elevator has crossed that floor already, then that input will reset once the elevator serves all of the requests in the current direction. or maybe not,
+    that depends on how do we want to serve the elevator.
+an elevator can have multiple states. IDLE, GOINGUP, GOINGDOWN.
+The system should be able to pick an elevator out of the available elevators optimally. Decide on the algorithm for solving this problem.
+
+entities:
+elevator
+floor
+elevator_system
+
+singleton general implementation:
+
+public class Singleton{
+    public static volatile Singleton instance;
+
+    private Singleton(){
+        if(instance != null){
+            throw new RuntimeException("Use the getInstance() method of Singleton class.");
+        }
+    }
+
+    public Singleton getInstance(){
+        if(instance == null){
+            synchronized (Singleton.Class){
+                if(instance == null){
+                    instance = new Singleton();
+                }
+            }
+        }
+
+        return instance;
+    }
+
+    protected Object readResolve(){
+        return getInstance();
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException{
+        throw new CloneNotSpportedException("Cloning is not allowed");
+    }
+}

@@ -1,0 +1,75 @@
+We want to develop a Logging framework.
+How does it work?
+
+Let's see what all do we need.
+1. we must have multiple loggers, which can log to multiple locations, for example, it can log to file, log to console, log to other locations depending upon the usecase.
+2. then, we must have different log levels, for example, info, debug, warning, error, etc. Why do we need these? To define the criticality of the log.
+    we might want to log the logs based on a criticality threshold.
+3. we need a log message. This might contain log criticality, and the content of the log.
+4. we might need different settings for our log system. I can't come across any example for this. So, let's find it out on ChatGPT.
+5. then finally, we need out logsystem to manage everything.
+6. we also have log formatters. but i think that this should be wrapper around log message, and nothing else.
+
+design patterns -> strategy, singleton, chain of responsibility (optional).
+
+in the solved example, we have a different terminology. we will solve this question on the basis of that terminology to complete our design
+so that we can verify our design by comparing it with the solved example.
+
+entities:
+[done] 1. LogAppender interface
+[done] 2. FileAppender class
+[done] 3. ConsoleAppender class
+[done] 4. LogFormatter
+[done] 5. DefaultFormatter //used everywhere.
+[done] 6. LogMessage
+[done] 7. LoggerConfig
+[done] 8. LogLevel
+[done] 9. Logger //singleton instance
+
+Now let's make class diagrams quickly to solve this question.
+
+LogLevel enum:
+    INFO(1),
+    DEBUG(2),
+    WARNING(3),
+    ERROR(4);
+
+    private final int severity;
+
+    private LogLevel(int severity){
+        this.severity = severity;
+    }
+
+    public int getSeverity(){
+        return severity;
+    }
+
+    public boolean shouldLog(LogLevel configuredSeverity){
+        return this.getSeverity() >= configuredSeverity.getSeverity();
+    }
+
+LogMessage:
+    -message: String
+    -level: LogLevel
+    +getters()
+
+LogFormatter <<interface>>:
+    +formatMessage(LogMessage msg): String
+
+ConsoleFormatter:
+    //implementation of log formatter.
+
+LogAppender:
+    +append(LogFormatter formatter, LogMessage msg): void
+
+ConsoleAppender:
+    //implementation of log appender.
+
+LoggerConfig:
+    -appenders: List<LogAppender>
+    -minLogLevel: LogLevel
+    +addAppender(LogAppender appender)
+    
+Logger:
+    -config: LoggerConfig
+    +addLog(LogMessage logMessage): void

@@ -1,0 +1,35 @@
+we want to design a pub/sub system.
+in a pub/sub system, there are publishers and subscribers.
+
+subscribers subscribe to topics, and publishers publish to the topics. the message eventually is delivered to all of the subscribers of the subsequent topic.
+
+if we talk about the entities, we would find out that there are a couple of them. namely:
+topic, subscriber, publisher, message.
+
+let's now draw the class diagram of such a system.
+
+Topic:
+    -name: String
+    -subscribers: List<Subscriber>
+    +subscribe(Subscriber subscriber)
+    +unsubscribe(Subscriber subscriber)
+    +publish(Message msg): void
+
+Subscriber:
+    -name: String
+    -id: String
+    +getters()
+    +onMessage(Message msg): void
+
+Message:
+    -title: String
+    -content: String
+
+PubSubSystem:
+    -topics: Map<String, Topic>
+    +addTopic(String topicName): void
+    +subscribe(String topicName, Subscriber subscriber): void
+    +unsubscribe(String topicName, Subscriber subscriber): void
+    +publish(String topicName, Message msg): void
+
+

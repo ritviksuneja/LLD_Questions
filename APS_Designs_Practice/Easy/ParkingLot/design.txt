@@ -1,0 +1,58 @@
+design a partking lot.
+
+there should be multiple levels of the parking lot.
+there should be multiple slots available at a particular level. for eg, one slot for trucks, one slot for cars, one slot for bikes.
+a slot should be assigned whenever a new vehicle arrives, and the slot should be freed when the vehicle leaves.
+if not slots are available, the parking lot throws an exception
+every vehicle should have an entry time and during the exit time, there should be some charge that is charged by the parking lot. 
+a parking ticket should be generated when a vehicle is being parked, and at the time of exit, it should be charged accordingly.
+the first priority for assigning a parking slot should be given to level1, then to level2, then to level3, and so on...
+different fee for different type of vehicles.
+
+Okay, so let's do it.
+
+entities:
+
+ParkingLot
+Spot
+Level
+ParkingTicket
+Vehicle -- done
+
+
+Class diagram:
+
+VehicleType enum:
+    CAR, TRUCK, BIKE
+
+Vehicle:
+    -noPlate: String
+    -type: VehicleType
+
+SpotState enum:
+    OCCUPIED, FREE
+
+Spot:
+    -state: SpotState
+    -id: int
+    -vehicleType: VehicleType
+    //do we also need to keep a vehicle assigned to it as well?
+
+Level:
+    -spots: Map<int, Spot>
+    -id: int
+    +addSpot(spot: Spot)
+
+ParkingTicket:
+    -id: int
+    -vehicle: Vehicle
+    -entryTime: LocalTime
+
+ParkingLot:
+    -levels: Map<id, Level>
+    -spotToVehicleMapping: Map<id, String> //spotId, vehicleNumber
+    +assignVehicle(): ParkingTicket
+    +removeVehicle(): void
+    +addLevel(Level level): void
+
+
