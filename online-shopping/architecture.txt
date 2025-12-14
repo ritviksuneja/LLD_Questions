@@ -1,0 +1,131 @@
+Design an e-commerce platform order, tracking and delivery system. Handle multiple items with various quantities in a single order, partial and full cancellation support.
+
+
+Online Shopping Service (LLD)
+Problem Statement
+Design and implement an Online Shopping Service that allows users to browse products, add items to a cart, place orders, make payments, and track order status.
+
+Requirements
+User Management: Users can register, log in, and manage their profiles.
+Product Catalog: The system manages a catalog of products with details and prices.
+Cart Management: Users can add, update, or remove products in their shopping cart.
+Order Placement: Users can place orders for products in their cart.
+Order Tracking: The system tracks the status of each order (e.g., PLACED, SHIPPED, DELIVERED, CANCELLED).
+Payment Processing: Users can pay for their orders using different payment methods.
+Extensibility: Easy to add new features such as discounts, reviews, or wishlists.
+
+
+
+
+browse products
+add items to cart
+place orders
+make payments
+track order status
+
+order tracking:
+status of each order -> placed, shipped, delivered, cancelled.
+
+users:
+users can register, login and manage their profiles
+add, update or remove products in their shopping cart
+place orders for products in their cart
+cancel their orders
+pay for their orders using different payment methods.
+
+products:
+catalog of products with details and prices
+
+
+Classes:
+
+Product
+    -price: double
+    -name: string
+    -description: string
+
+OrderStatus enum
+    PLACED, SHIPPED, DELIVERED, CANCELLED
+
+Order
+    -products : Map<Product, int> //a map of product id and quantity
+    -user: User
+    -totalValue: double
+    -status: OrderStatus
+    -id: string
+
+User:
+    -name: string
+    -id: string
+    -cart: Map<string, int> //a map of product id and quantity
+
+Amazon:
+    -users: List<User>
+    -products: List<Product>
+    -orders: List<Order>
+    
+
+enum PaymentMethodType {
+    CARD, UPI
+}
+
+class Order {
+    int id;
+    double amount;
+    PaymentMethodType paymentMethod;  // how this order will be paid
+
+    Order(int id, double amount, PaymentMethodType paymentMethod) {
+        this.id = id;
+        this.amount = amount;
+        this.paymentMethod = paymentMethod;
+    }
+
+    public PaymentMethodType getPaymentMethod() {
+        return paymentMethod;
+    }
+}
+
+
+interface PaymentStrategy {
+    void pay(Order order);
+}
+
+class CardPaymentStrategy implements PaymentStrategy {
+    @Override
+    public void pay(Order order) {
+        System.out.println("Processing CARD payment for order " +
+                order.id + " of amount " + order.amount);
+    }
+}
+
+class UpiPaymentStrategy implements PaymentStrategy {
+    @Override
+    public void pay(Order order) {
+        System.out.println("Processing UPI payment for order " +
+                order.id + " of amount " + order.amount);
+    }
+}
+
+class PaymentProcessor {
+    public void process(Order order) {
+        PaymentStrategy strategy;
+
+        // choose strategy based on order.paymentMethod
+        if (order.getPaymentMethod() == PaymentMethodType.CARD) {
+            strategy = new CardPaymentStrategy();
+        } else {
+            strategy = new UpiPaymentStrategy();
+        }
+
+        strategy.pay(order);
+    }
+}
+
+public class Demo {
+    public static void main(String[] args) {
+        Order order = new Order(1, 500.0, PaymentMethodType.CARD);
+
+        PaymentProcessor processor = new PaymentProcessor();
+        processor.process(order);  // internally picks CARD strategy
+    }
+}

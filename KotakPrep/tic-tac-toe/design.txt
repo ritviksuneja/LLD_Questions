@@ -1,0 +1,63 @@
+tic tac toe design
+
+players take turn and place either 'x' or 'o' on a 3*3 grid
+
+first player to hit three xs or os on the board wins
+
+So, the classes that I feel should be included are:
+
+enum Symbol
+    O,
+    X,
+    EMPTY
+
+class Cell
+    -symbol : Symbol
+    +getSymbol() : Symbol
+
+class Board
+    -board : Cell[][]
+    +isCellValid(int r, int c) : boolean
+    +setCell(int r, int c, Symbol symbol) : void
+    +getCellSymbol(int r, int c) : Symbol
+
+enum GameStatus
+    ACTIVE,
+    DRAW,
+    WINNER_X,
+    WINNER_O
+
+class Game
+    -board : Board
+    -currPlayer : int
+    -gameStatus : GameStatus
+    -player1 : Player
+    -player2 : Player
+    -currentPlayer : Player
+    +printWinner() : void
+    +move() : boolean
+    +isCellValid(int r, int c) : boolean
+    
+
+public class SingletonClass
+{
+    private static volatile SingletonClass INSTANCE;
+
+    public SingletonClass(){
+        if(INSTANCE != NULL){
+            throw new RuntimeException("Call the getInstance() method.");
+        }
+    }
+
+    public SingletonClass getInstance(){
+        if(INSTANCE == null){
+            synchronized(SingletonClass.class){
+                if(INSTANCE == null){
+                    INSTANCE = new Singleton.Class();
+                }
+            }
+        } 
+
+        return INSTANCE;
+    }
+}

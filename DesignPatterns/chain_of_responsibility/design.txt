@@ -1,0 +1,15 @@
+in the chain of responsibility design pattern,
+
+there is an interface.
+
+and classes keep on passing the responsibility to the next class in the chain.
+
+So,
+let's say that we have different type of loggers.
+
+we can have a Logger interface.
+
+Logger <<Interface>>:
+    -nextLogger: Logger
+    -allowedMsgType: int
+    +logMessage(String message, int incomingMsgType) : void

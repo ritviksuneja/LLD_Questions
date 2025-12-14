@@ -1,0 +1,65 @@
+This transaction ensures atomicity - either both updates happen or neither does. However, transactions alone don't ensure consistency in all scenarios, particularly when multiple transactions are happening concurrently.
+Transactions and Concurrent Operations
+Transactions ensure consistency for a single series of operations, but things get more complicated when multiple transactions are happening concurrently. Remember, in most real applications, you'll have multiple users or services trying to read and modify data at the same time.
+This is where many candidates get tripped up in interviews. They understand basic transactions but haven't thought through how to maintain consistency when multiple operations are happening simultaneously.
+Let's look at an auction system as an example. Here users place bids on items and we accept bids only if they're higher than the current max bid. A single transaction can ensure that checking the current bid and placing a new bid happen atomically, but what happens when two users try to bid at the same time?
+BEGIN;
+-- Get current max bid for item 123
+SELECT maxBid from Auction where id = 123;
+
+-- Place new bid if it's higher
+INSERT INTO bids (item_id, user_id, amount) 
+VALUES (123, 456, 100);
+
+-- Update the max bid
+UPDATE Auction SET maxBid = 100 WHERE id = 123;
+COMMIT;
+Even though this is in a transaction, with PostgreSQL's default isolation level (Read Committed), we could still have consistency problems if two users bid simultaneously. Both transactions could read the same max bid before either commits.
+Here's how this could lead to an inconsistent state:
+User A's transaction reads current max bid: $90
+User B's transaction reads current max bid: $90
+User A places bid for $100
+User A commits
+User B places bid for $95
+User B commits
+Now we have an invalid state: a $95 bid was accepted after a $100 bid!
+There are two main ways we can solve this concurrency issue:
+1. Row-Level Locking
+The simplest solution is to lock the auction row while we're checking and updating bids. By using the FOR UPDATE clause, we tell PostgreSQL to lock the rows we're reading. Other transactions trying to read these rows with FOR UPDATE will have to wait until our transaction completes. This ensures we have a consistent view of the data while making our changes.
+BEGIN;
+-- Lock the item and get current max bid
+SELECT maxBid FROM Auction WHERE id = 123 FOR UPDATE;
+
+-- Place new bid if it's higher
+INSERT INTO bids (item_id, user_id, amount) 
+VALUES (123, 456, 100);
+
+-- Update the max bid
+UPDATE Auction SET maxBid = 100 WHERE id = 123;
+COMMIT;
+So when you need to ensure that two operations happen atomically, you'll want to emphasize to your interviewer how you will achieve that beyond simply saying "we'll use transactions". Instead, "we'll use transactions and row-level locking on the auction row", for this case.
+2. Higher Isolation Level
+Alternatively, we can use a stricter isolation level:
+BEGIN;
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+
+-- Same code as before...
+
+COMMIT;
+While serializable isolation prevents all consistency anomalies, it comes with a cost: if two transactions conflict, one will be rolled back and need to retry. Your application needs to be prepared to handle these retry scenarios.
+PostgreSQL supports three isolation levels, each providing different consistency guarantees:
+Read Committed (Default) is PostgreSQL's default isolation level that only sees data that was committed before the query began. As transactions execute, each query within a transaction can see new commits made by other transactions that completed after the transaction started. While this provides good performance, it can lead to non-repeatable reads where the same query returns different results within a transaction.
+Repeatable Read in PostgreSQL provides stronger guarantees than the SQL standard requires. It creates a consistent snapshot of the data as of the start of the transaction, and unlike other databases, PostgreSQL's implementation prevents both non-repeatable reads AND phantom reads. This means not only will the same query return the same results within a transaction, but no new rows will appear that match your query conditions - even if other transactions commit such rows.
+Serializable is the strongest isolation level that makes transactions behave as if they were executed one after another in sequence. This prevents all types of concurrency anomalies but comes with the trade-off of requiring retry logic in your application to handle transaction conflicts.
+PostgreSQL's implementation of Repeatable Read is notably stronger than what the SQL standard requires. While other databases might allow phantom reads at this isolation level, PostgreSQL prevents them. This means you might not need Serializable isolation in cases where you would in other databases.
+So, when should you use row-locking and when should you use a higher isolation level?
+Aspect	Serializable Isolation	Row-Level Locking
+Concurrency	Lower - transactions might need to retry on conflict	Higher - only conflicts when touching same rows
+Performance	More overhead - must track all read/write dependencies	Less overhead - only locks specific rows
+Use Case	Complex transactions where it's hard to know what to lock	When you know exactly which rows need atomic updates
+Complexity	Simple to implement but requires retry logic	More explicit in code but no retries needed
+Error Handling	Must handle serialization failures	Must handle deadlock scenarios
+Example	Complex financial calculations across multiple tables	Auction bidding, inventory updates
+Memory Usage	Higher - tracks entire transaction history	Lower - only tracks locks
+Scalability	Doesn't scale as well with concurrent transactions	Scales better when conflicts are rare
+Row-level locking is generally preferred when you know exactly which rows need to be locked. Save serializable isolation for cases where the transaction is too complex to reason about which locks are needed.

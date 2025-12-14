@@ -1,0 +1,82 @@
+simple factory design pattern:
+
+we have a vehicle class. we want to create 2 factories, one for car, one for bike.
+we need a factory for this.
+
+Vehicle interface:
+    +move() : void
+    +getModel(): String
+    +getBrand(): String
+
+Car implements Vehicle:
+    -model: String
+    -brand: String
+    +move() : void
+    +getModel(): String
+    +getBrand(): String
+
+Bike implements Vehicle:
+    -model: String
+    -brand: String
+    +move() : void
+    +getModel(): String
+    +getBrand(): String
+
+Factory:
+    +createVehicle(String vehicleType, String model, String brand): Vehicle
+
+Main class:
+    Factory vehicleFactory = new Factory();
+    Vehicle suzukiSwift = vehicleFactory.createVehicle("car", "swift", "suzuki");
+
+==============================================================================================
+
+factory method design pattern:
+
+In this, we will basically have a car factory and a bike factory on top of the Factory class (It was a class previouly, but now it becomes an interface).
+It is done in order for us to save multiple case statements in the Factory class.
+
+We can create separate factories instead. And then directly call that particular factory from the main class, rather than passing "car" or  "bike" from the main class to
+the factory class.
+
+==============================================================================================
+
+abstract factory design pattern:
+
+In this, we create suzuki factory and honda factory on top of car factory. one more level down the line.
+
+
+==============================================================================================
+
+In short ->
+
+Factory design pattern = Factory is a class
+Factory method design pattern = Factory is an interface using which we can create honda cars, suzuki cars
+Abstract factory method design pattern = We even have Honda Factory and a Suzuki Factory
+
+Factory Method: Factory interface where subclasses (HondaFactory, SuzukiFactory) each know how to create one product family (Car).
+
+Simple Factory
+   VehicleFactory (class)
+      createVehicle(type)
+
+Factory Method
+   CarFactory (interface)
+      HondaCarFactory
+      SuzukiCarFactory
+
+Abstract Factory
+   VehicleFactory (interface)
+      HondaFactory -> HondaCar, HondaBike, HondaEngine
+      SuzukiFactory -> SuzukiCar, SuzukiBike, SuzukiEngine
+
+And then these HondaCar, HondaBike are classes over Car and Bike interfaces.
+
+Abstract Factory does not require a single Vehicle interface.
+Instead, it defines multiple product interfaces (Car, Bike, etc.) that represent different product families.
+A Vehicle interface can exist if there are common behaviors, but it’s optional.
+
+we club honda car, honda bike, honda engine in a single factory. that's why it's an abstract factory. it's an abstraction over different factories.
+
+==============================================================================================
+

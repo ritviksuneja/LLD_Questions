@@ -1,0 +1,87 @@
+Design and implement a Ride Sharing Service that allows riders to request rides, drivers to accept trips, and the system to manage trip 
+assignments, payments, and trip status.
+
+Person interface
+
+User class
+
+Rider class
+
+TripStatus
+
+Trip
+
+UberSystem class
+    -> allow users to request ride
+    -> allow riders to accept ride
+    -> manage trips
+    -> manage payments
+
+=======================================
+
+Location:
+    -latitude : Integer
+    -longitude: Integer
+
+Person<<Interface>>:
+    +getName() : string
+    +getPhoneNo(): phoneNo
+    +getLocation(): Location
+
+Rider implements Person:
+    -name: string
+    -id: String
+    -phoneNo: string
+    -location: Location
+    +updateLocation() : void
+
+Driver implements Person:
+    -name: string
+    -id: String
+    -phoneNo: string
+    -location: Location
+    +updateLocation() : void
+
+PaymentMethod enum:
+    CARD, UPI
+
+TripStatus:
+    REQUESTED, CANCELED, ASSIGNED, STARTED, COMPLETED
+
+PaymentStatus:
+    PENDING, COMPLETED
+
+Trip:
+    -rider: Rider
+    -id: String
+    -location: Location
+    -driver: Driver
+    -amount: BigDecimal
+    -paymentMethod: PaymentMethod
+    -status: TripStatus
+
+PaymentStrategy:
+    +pay(BigDecimal amt) : boolean
+
+CardPayment:
+    +pay(BigDecimal amt) : boolean
+
+UpiPayment:
+    +pay(BigDecimal amt) : boolean
+
+PaymentProcessor:
+    +pay(Trip trip, BigDecimal amt)
+
+UberSystem:
+    -riderTrips : Map<String, Set<String>> // riderId -> Set<tripId>
+    -driverTrips: Map<String, Set<String>> // driverId -> Set<driverId>
+    -trips : Map<String, Trip> // tripId -> Trip object
+    -riders: Map<String, Rider> //riderId -> Rider
+    -drivers: Map<String, Driver> //driverId -> Driver
+
+    +addDriver(Driver d) : void
+    +addRider(Rider r) : void
+    +requestTrip(String riderId, Trip trip) : boolean
+    +cancelTrip(String riderId, String tripId) : boolean
+    +acceptTrip(String driverId, String tripId) : boolean
+    +endTrip(String driverId, String tripId): boolean //calls the PatmentProcessor class.

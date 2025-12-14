@@ -1,0 +1,39 @@
+observer design pattern.
+
+there are topics.
+users subscribe to the topics.
+pubsub is not aware of the users. rather it is only aware of the topics.
+users can send a message to the other users subscribed to a particular topic.
+
+User:
+    -id: String
+    -name: String
+    +User(String, String)
+    +onMessage(String message) : void //to display the messages received by the topics
+
+Topic:
+    -id: String
+    -name: String
+    -description: String
+    -subscribers : List<User>
+    +Topic(String id, String name, String description)
+    +subscribe(User user): void
+    +unsubscribe(User user): void
+    +sendMessage(String message): void
+
+PubSub:
+    +topics: Map<String, Topic> //topic id -> topic
+    +addTopic(Topic topic): void
+    +removeTopic(Topic topic): void
+    +sendMessage(String topicId, String message): void
+    +subscribe(User user, String topicId): void
+    +unsubsribe(User user, String topicId): void
+
+Notes:
+User never talks to Topic directly
+Everything flows through PubSub
+That is why we need to keep subscribe and unsubscribe methods in the PubSub class as well.
+Otherwise, users would need to hold a reference of the topics they are in, which is not a good design.
+
+Call the PubSub class Broker
+Call the user class as subscriber / publisher

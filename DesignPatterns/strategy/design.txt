@@ -1,0 +1,148 @@
+strategy design pattern:
+
+we have multiple payment options, like pay via upi and pay via card.
+So, we decide on runtime which type of payment do we want to make.
+
+For example,
+
+Payment interface:
+    +pay(int amt): void
+
+PayViaUPI:
+    +pay(int amt): void
+
+PayViaCard:
+    +pay(int amt): void
+
+Checkout:
+    -paymentMethod: Payment
+    +Checkout(Payment method)
+    +setPaymentMethod(Payment method) : void //This is done so that we can change the payment method at runtime.
+    +pay(int amt) : void
+
+===================================================================================
+
+Remeber that we can pass a strategy in a method as well, rather than directly setting it in the constructor:
+
+// --- Search (Using Strategy Pattern) ---
+public List<LibraryItem> search(String query, SearchStrategy strategy) {
+    return strategy.search(query, new ArrayList<>(catalog.values()));
+}
+
+Separate payment class acccepting a strategy for payment.
+
+public class PaymentService {
+    public boolean processPayment(PaymentStrategy strategy, double amount) {
+        return strategy.pay(amount);
+    }
+}
+
+
+=======================================================================================
+
+State design pattern:
+
+public class Trip {
+    private Map<TripStatus, TripState> stateMap = new HashMap<>();
+    private TripState currentState;
+
+    public Trip() {
+        stateMap.put(TripStatus.NEW, new NewTripState());
+        stateMap.put(TripStatus.DRIVER_ASSIGNED, new TripAcceptedState());
+        stateMap.put(TripStatus.STARTED, new TripStartedState());
+        stateMap.put(TripStatus.COMPLETED, new TripCompletedState());
+        stateMap.put(TripStatus.CANCELED, new TripCanceledState());
+
+        currentState = stateMap.get(TripStatus.NEW);
+    }
+
+    public TripState getState(TripStatus status) {
+        return stateMap.get(status);
+    }
+
+    public void setState(TripState state) {
+        this.currentState = state;
+    }
+
+    public TripState getCurrentState() {
+        return currentState;
+    }
+}
+
+
+public class TripStartedState implements TripState {
+
+    @Override
+    public void completeTrip(Trip trip, PaymentMethod method) {
+        method.pay(trip.getPrice());
+
+        TripState completed = trip.getState(TripStatus.COMPLETED);
+        trip.setState(completed);
+
+        System.out.println("Trip completed and payment done.");
+    }
+}
+
+Right now, Trip is doing:
+
+stateMap.put(TripStatus.NEW, new NewTripState());
+stateMap.put(TripStatus.DRIVER_ASSIGNED, new TripAcceptedState());
+...
+
+
+So if we ever introduce a new status like:
+
+DISPUTED
+
+
+We have to edit Trip class:
+
+stateMap.put(TripStatus.DISPUTED, new TripDisputedState());
+
+
+This is tight coupling and not open for extension.
+
+Let's fix it.
+
+Step 1 — Create a StateFactory
+public interface TripStateFactory {
+    TripState getState(TripStatus status);
+}
+
+Step 2 — Implement it
+public class DefaultTripStateFactory implements TripStateFactory {
+
+    private final Map<TripStatus, TripState> registry = new HashMap<>();
+
+    public DefaultTripStateFactory() {
+        register(TripStatus.NEW, new NewTripState());
+        register(TripStatus.DRIVER_ASSIGNED, new TripAcceptedState());
+        register(TripStatus.STARTED, new TripStartedState());
+        register(TripStatus.COMPLETED, new TripCompletedState());
+        register(TripStatus.CANCELED, new TripCanceledState());
+    }
+
+    public void register(TripStatus status, TripState state) {
+        registry.put(status, state);
+    }
+
+    @Override
+    public TripState getState(TripStatus status) {
+        return registry.get(status);
+    }
+}
+
+Step 3 — Inject factory into Trip
+public class Trip {
+    private TripStateFactory stateFactory;
+    private TripState currentState;
+
+    public Trip(TripStateFactory factory) {
+        this.stateFactory = factory;
+        this.currentState = factory.getState(TripStatus.NEW);
+    }
+
+    public void setState(TripStatus status) {
+        this.currentState = stateFactory.getState(status);
+    }
+}

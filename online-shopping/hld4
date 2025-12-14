@@ -1,0 +1,42 @@
+ACID Properties
+One of PostgreSQL's greatest strengths is its strict adherence to ACID (Atomicity, Consistency, Isolation, and Durability) properties. If you've used databases like MongoDB or Cassandra, you're familiar with eventual consistency or relaxed transaction guarantees which are common trade-offs in NoSQL databases. PostgreSQL takes a different approach – it ensures that your data always follows all defined rules and constraints (like foreign keys, unique constraints, and custom checks), and that all transactions complete fully or not at all, even if it means sacrificing some performance.
+Let's break down what ACID means using a real-world example: transferring money between bank accounts.
+Atomicity (All or Nothing)
+Imagine you're transferring $100 from your savings to your checking account. This involves two operations:
+Deduct $100 from savings
+Add $100 to checking
+BEGIN;
+  UPDATE accounts SET balance = balance - 100 WHERE account_id = 'savings';
+  UPDATE accounts SET balance = balance + 100 WHERE account_id = 'checking';
+COMMIT;
+Atomicity guarantees that either both operations succeed or neither does. If the system crashes after deducting from savings but before adding to checking, PostgreSQL will roll back the entire transaction. Your money never disappears into thin air.
+In your interview, emphasize how atomicity prevents partial failures. Without it, distributed systems can end up in inconsistent states that are very difficult to recover from.
+Consistency (Data Integrity)
+Consistency ensures that transactions can only bring the database from one valid state to another. For example, let's say we have a rule that account balances can't go negative:
+CREATE TABLE accounts (
+    account_id TEXT PRIMARY KEY,
+    balance DECIMAL CHECK (balance >= 0),
+    owner_id INTEGER REFERENCES users(id)
+);
+If a transaction would make your balance negative, PostgreSQL will reject the entire transaction. This is different from NoSQL databases where you often have to enforce these rules in your application code.
+Confusingly, consistency in ACID has a slightly different meaning than consistency in CAP Theorem. In ACID, consistency means that the database always follows all defined rules and constraints. In the CAP Theorem, consistency means that the database always returns the correct result, even if it means sacrificing availability or partition tolerance.
+Isolation (Concurrent Transactions)
+Isolation levels determine how transactions can interact with data that's being modified by other concurrent transactions. PostgreSQL supports four isolation levels, each preventing different types of phenomena:
+BEGIN;
+SET TRANSACTION ISOLATION LEVEL READ COMMITTED;  -- Default level
+-- or REPEATABLE READ
+-- or SERIALIZABLE
+COMMIT;
+PostgreSQL's default "Read Committed" level only prevents dirty reads (reading uncommitted changes). It allows non-repeatable reads and phantom reads. Check the PostgreSQL documentation for a detailed breakdown of which anomalies each level prevents.
+While the SQL standard defines four isolation levels, PostgreSQL implements only three distinct levels internally. Specifically, Read Uncommitted behaves identically to Read Committed in PostgreSQL. This design choice aligns with PostgreSQL's multiversion concurrency control (MVCC) architecture, which always provides snapshot isolation - making it impossible to read uncommitted data.
+Isolation Level	Dirty Read	Nonrepeatable Read	Phantom Read	Serialization Anomaly
+Read uncommitted	Allowed, but not in PG	Possible	Possible	Possible
+Read committed	Not possible	Possible	Possible	Possible
+Repeatable read	Not possible	Not possible	Allowed, but not in PG	Possible
+Serializable	Not possible	Not possible	Not possible	Not possible
+Durability (Permanent Storage)
+Once PostgreSQL says a transaction is committed, that data is guaranteed to have been written to disk and sync'd, protecting against crashes or power failures. This is achieved through Write-Ahead Logging (WAL):
+Changes are first written to a log
+The log is flushed to disk
+Only then is the transaction considered committed
+While durability is guaranteed, there's a performance cost. Some applications might choose to relax durability for speed (like setting synchronous_commit = off), meaning some writes which haven't been written to disk may be lost in the event of a power outage or crash.

@@ -1,0 +1,156 @@
+builder design pattern
+
+here, we build things.
+
+let's say that we have a computer. and we want to build 2 types of computers. 
+let's say that the first type is - Personal computer.
+2nd type is - Gaming computer.
+
+So,
+
+Computer:
+    -cpu: int
+    -memory: int
+    -graphics: int
+    +setCPU(int) : void
+    +setMemory(int) : void
+    +setGraphics(int) : void
+
+ComputerBuilder interface:
+    +setCPU()
+    +setMemory()
+    +setGraphics()
+
+PCBuilder:
+    -computer: Computer
+    +setCPU(): void
+    +setMemory(): void
+    +setGraphics(): void
+    +getComputer(): Computer
+
+GamingComputerBuilder:
+    -computer: Computer
+    +setCPU(): void
+    +setMemory(): void
+    +setGraphics(): void
+    +getComputer(): Computer
+
+Orchestrator:
+    -builder: ComputerBuilder
+    +build(): Computer
+
+Mistakes in the design above:
+
+1.  Computer(or product) should not expose the public methods of setting cpu, memory, graphics. 
+    That control should only be with the builder classes.
+    So, we should only hav public getters in the Computer(or Product) class.
+    Important -> The setters should not have any scoping defined to it. Meaning it should be of "default" type.
+    neither public, nor private, not protected.
+
+2.  The builders should not return void during setMemory, setGraphics etc. methods.
+    Rather, these methods should have a return type of ComputerBuilder, so that the Orchestrator (or Director) can
+    chain the building process in a way like computer = builder.setMemory().setCPU().setGraphics().getComputer()
+
+    @Override
+    public ComputerBuilder setCPU() {
+        computer.setCpu(16);
+        return this;
+    }
+
+3.  This is how the builder constructor should look like. We should create a new computer in the constructor itself.
+    public GamingComputerBuilder() {
+        computer = new Computer();
+    }
+
+4. It is called Director, not builder.
+
+===================================================================================================================================
+
+Modern way ->
+
+
+🟢 How chaining works without setters on the product
+Product (immutable)
+public class Computer {
+    private final int cpu;
+    private final int memory;
+    private final int graphics;
+
+    public Computer(int cpu, int memory, int graphics) {
+        this.cpu = cpu;
+        this.memory = memory;
+        this.graphics = graphics;
+    }
+}
+
+
+👉 No setters at all.
+👉 Immutable once constructed.
+
+Builder (mutable)
+public class ComputerBuilder {
+    private int cpu;
+    private int memory;
+    private int graphics;
+
+    public ComputerBuilder setCPU(int cpu) {
+        this.cpu = cpu;
+        return this;
+    }
+
+    public ComputerBuilder setMemory(int memory) {
+        this.memory = memory;
+        return this;
+    }
+
+    public ComputerBuilder setGraphics(int graphics) {
+        this.graphics = graphics;
+        return this;
+    }
+
+    public Computer build() {
+        return new Computer(cpu, memory, graphics);
+    }
+}
+
+
+👉 All mutation happens here.
+👉 You can chain like:
+
+Computer pc = new ComputerBuilder()
+                 .setCPU(8)
+                 .setMemory(16)
+                 .setGraphics(4)
+                 .build();
+
+And the product is still immutable.
+
+💥 THIS is the modern, safe, and best-practice Builder pattern.
+
+🧠 Conceptual separation
+Concept	Mutable?	Purpose
+Builder	✔️ mutable	Gather configuration
+Product	❌ immutable	Result object
+🔥 Answering your question directly:
+
+Can we still chain the building process if the product has no setters and is immutable?
+
+✔ Yes, absolutely.
+
+Because chaining happens inside the builder, not by directly calling setters on the product.
+
+🧩 Why this is better
+1. Product stays immutable
+
+No weird partial states, no thread safety issues.
+
+2. Builder can validate before building
+
+Example:
+
+if (cpu < 2) throw new IllegalStateException("CPU too low");
+
+3. You get a fully constructed object in one atomic step
+Computer c = builder.build();
+
+4. You can reuse the builder to make multiple products
